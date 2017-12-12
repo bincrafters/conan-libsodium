@@ -1,8 +1,10 @@
 #include <cstdlib>
 #include <iostream>
+#include "sodium.h"
 
 int main()
 {
-    std::cout << "Bincrafters\n";
+    if (sodium_init() < 0)
+        return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }
