@@ -4,6 +4,8 @@
 
 [Conan.io](https://conan.io) package for [somelib](https://github.com/someauthor/somelib) project
 
+![conan-libsodium](logo.png)
+
 The packages generated with this **conanfile** can be found in [Bintray](https://bintray.com/bincrafters/public-conan/somelib%3Abincrafters).
 
 ## For Users: Use this package
