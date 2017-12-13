@@ -24,7 +24,11 @@ class LibsodiumConan(ConanFile):
         os.rename(extracted_dir, "sources")
 
     def build_vs(self):
-        cmd = tools.msvc_build_command(self.settings, "libsodium.sln", upgrade_project=False)
+        if self.options.shared:
+            build_type = 'DebugDLL' if self.settings.build_type == 'Debug' else 'ReleaseDLL'
+        else:
+            build_type = str(self.settings.build_type)
+        cmd = tools.msvc_build_command(self.settings, "libsodium.sln", upgrade_project=False, build_type=build_type)
         with tools.chdir('sources'):
             if self.settings.arch == "x86":
                 cmd = cmd.replace("x86", "Win32")
