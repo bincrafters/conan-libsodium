@@ -24,7 +24,15 @@ class LibsodiumConan(ConanFile):
         os.rename(extracted_dir, "sources")
 
     def build_vs(self):
-        raise Exception("TODO")
+
+        cmd = tools.msvc_build_command(self.settings, "libsodium.sln")
+        with tools.chdir('sources'):
+            cmd = cmd.replace("&& devenv libsodium.sln /upgrade ", "")
+            if self.settings.arch == "x86":
+                cmd = cmd.replace("x86", "Win32")
+            # skip unit tests
+            cmd += " /p:PostBuildEventUseInBuild=false"
+            self.run(cmd)
 
     def build_configure(self):
         with tools.chdir('sources'):
@@ -46,6 +54,10 @@ class LibsodiumConan(ConanFile):
 
     def package(self):
         self.copy(pattern="LICENSE", src='sources')
+        if self.settings.compiler == 'Visual Studio':
+            self.copy("*.h", dst="include", src=os.path.join("sources", "src", "libsodium", "include"))
+            self.copy("*.lib", dst="lib", src="sources", keep_path=False)
+            self.copy("*.dll", dst="bin", src="sources", keep_path=False)
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
