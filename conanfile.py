@@ -24,12 +24,21 @@ class LibsodiumConan(ConanFile):
         os.rename(extracted_dir, "sources")
 
     def build_vs(self):
+        runtime_library = {'MT': 'MultiThreaded',
+                           'MTd': 'MultiThreadedDebug',
+                           'MD': 'MultiThreadedDLL',
+                           'MDd': 'MultiThreadedDebugDLL'}.get(str(self.settings.compiler.runtime))
         if self.options.shared:
             build_type = 'DebugDLL' if self.settings.build_type == 'Debug' else 'ReleaseDLL'
         else:
             build_type = str(self.settings.build_type)
+
         cmd = tools.msvc_build_command(self.settings, "libsodium.sln", upgrade_project=False, build_type=build_type)
         with tools.chdir('sources'):
+            for runtime in ['MultiThreaded', 'MultiThreadedDebug', 'MultiThreadedDLL', 'MultiThreadedDebugDLL']:
+                old_runtime = '<RuntimeLibrary>%s</RuntimeLibrary>' % runtime
+                new_runtime = '<RuntimeLibrary>%s</RuntimeLibrary>' % runtime_library
+                tools.replace_in_file('libsodium.vcxproj', old_runtime, new_runtime)
             if self.settings.arch == "x86":
                 cmd = cmd.replace("x86", "Win32")
             # skip unit tests
