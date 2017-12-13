@@ -24,10 +24,8 @@ class LibsodiumConan(ConanFile):
         os.rename(extracted_dir, "sources")
 
     def build_vs(self):
-
-        cmd = tools.msvc_build_command(self.settings, "libsodium.sln")
+        cmd = tools.msvc_build_command(self.settings, "libsodium.sln", upgrade_project=False)
         with tools.chdir('sources'):
-            cmd = cmd.replace("&& devenv libsodium.sln /upgrade ", "")
             if self.settings.arch == "x86":
                 cmd = cmd.replace("x86", "Win32")
             # skip unit tests
