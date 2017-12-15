@@ -29,16 +29,19 @@ class LibsodiumConan(ConanFile):
                            'MD': 'MultiThreadedDLL',
                            'MDd': 'MultiThreadedDebugDLL'}.get(str(self.settings.compiler.runtime))
         if self.options.shared:
-            build_type = 'DebugDLL' if self.settings.build_type == 'Debug' else 'ReleaseDLL'
+            build_type = 'DynDebug' if self.settings.build_type == 'Debug' else 'DynRelease'
         else:
-            build_type = str(self.settings.build_type)
+            build_type = 'StaticDebug' if self.settings.build_type == 'Debug' else 'StaticRelease'
 
         cmd = tools.msvc_build_command(self.settings, "libsodium.sln", upgrade_project=False, build_type=build_type)
-        with tools.chdir('sources'):
-            for runtime in ['MultiThreaded', 'MultiThreadedDebug', 'MultiThreadedDLL', 'MultiThreadedDebugDLL']:
-                old_runtime = '<RuntimeLibrary>%s</RuntimeLibrary>' % runtime
-                new_runtime = '<RuntimeLibrary>%s</RuntimeLibrary>' % runtime_library
-                tools.replace_in_file('libsodium.vcxproj', old_runtime, new_runtime)
+        msvc = {'10': 'vs2010',
+                '11': 'vs2012',
+                '12': 'vs2013',
+                '14': 'vs2015',
+                '15': 'vs2017'}.get(str(self.settings.compiler.version))
+        with tools.chdir(os.path.join('sources', 'builds', 'msvc', msvc)):
+            runtime = '<ClCompile><RuntimeLibrary>%s</RuntimeLibrary>' % runtime_library
+            tools.replace_in_file(os.path.join('libsodium', 'libsodium.props'), '<ClCompile>', runtime)
             if self.settings.arch == "x86":
                 cmd = cmd.replace("x86", "Win32")
             # skip unit tests
