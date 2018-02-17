@@ -12,7 +12,7 @@ class LibsodiumConan(ConanFile):
     description = "Sodium is a modern, easy-to-use software library for encryption, decryption, signatures, " \
                   "password hashing and more."
     license = "https://github.com/jedisct1/libsodium/blob/master/LICENSE"
-    exports_sources = ["LICENSE"]
+    exports_sources = ["LICENSE", "Findsodium.cmake"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False]}
     default_options = "shared=False"
@@ -68,6 +68,7 @@ class LibsodiumConan(ConanFile):
 
     def package(self):
         self.copy(pattern="LICENSE", src='sources')
+        self.copy(pattern="Findsodium.cmake")
         if self.settings.compiler == 'Visual Studio':
             self.copy("*.h", dst="include", src=os.path.join("sources", "src", "libsodium", "include"))
             self.copy("*.lib", dst="lib", src="sources", keep_path=False)
