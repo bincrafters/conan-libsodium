@@ -13,7 +13,7 @@ class LibsodiumConan(ConanFile):
     description = "Sodium is a modern, easy-to-use software library for encryption, decryption, signatures, " \
                   "password hashing and more."
     license = "https://github.com/jedisct1/libsodium/blob/master/LICENSE"
-    exports_sources = ["LICENSE", "FindSodium.cmake"]
+    exports_sources = ["LICENSE.md"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False]}
     default_options = "shared=False"
