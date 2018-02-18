@@ -5,7 +5,7 @@ find_library(sodium_LIBRARY NAMES ${CONAN_LIBS_LIBSODIUM} PATHS ${CONAN_LIB_DIRS
 
 set(sodium_LIBRARY_DEBUG sodium_LIBRARY)
 set(sodium_LIBRARY_RELEASE sodium_LIBRARY)
-set(sodium_VERSION "1.0.15")
+set(sodium_VERSION "1.0.16")
 set(sodium_FOUND ON)
 
 set(sodium_INCLUDE_DIRS ${sodium_INCLUDE_DIR})
@@ -53,4 +53,3 @@ endif()
 add_library(sodium INTERFACE IMPORTED)
 set_property(TARGET sodium PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${sodium_INCLUDE_DIRS})
 set_property(TARGET sodium PROPERTY INTERFACE_LINK_LIBRARIES ${sodium_LIBRARIES})
-
