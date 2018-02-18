@@ -9,7 +9,7 @@ else()
 endif()
 
 if (${BUILD_VARIANT} STREQUAL "FIND_PACKAGE" OR ${BUILD_VARIANT} STREQUAL "FIND_PACKAGE_TARGETS")
-    find_package(sodium REQUIRED)
+    find_package(Sodium REQUIRED)
 endif()
 
 add_executable(${PROJECT_NAME} test_package.cpp)
