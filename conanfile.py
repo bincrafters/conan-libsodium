@@ -9,10 +9,11 @@ class LibsodiumConan(ConanFile):
     name = "libsodium"
     version = "1.0.15"
     url = "https://github.com/bincrafters/conan-libsodium"
+    homepage = "https://github.com/jedisct1/libsodium"
     description = "Sodium is a modern, easy-to-use software library for encryption, decryption, signatures, " \
                   "password hashing and more."
-    license = "https://github.com/jedisct1/libsodium/blob/master/LICENSE"
-    exports_sources = ["LICENSE", "FindSodium.cmake"]
+    license = "https://github.com/jedisct1/libsodium/blob/master/LICENSE"    
+    exports_sources = ["LICENSE.md", "FindSodium.cmake"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False]}
     default_options = "shared=False"
