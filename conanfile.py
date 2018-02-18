@@ -15,8 +15,12 @@ class LibsodiumConan(ConanFile):
     license = "https://github.com/jedisct1/libsodium/blob/master/LICENSE"    
     exports_sources = ["LICENSE.md", "FindSodium.cmake"]
     settings = "os", "arch", "compiler", "build_type"
-    options = {"shared": [True, False]}
-    default_options = "shared=False"
+    options = {"shared": [True, False], "fPIC": [True, False]}
+    default_options = "shared=False", "fPIC=True"
+
+    def configure(self):
+        if self.settings.compiler == 'Visual Studio':
+            del self.options.fPIC
 
     def source(self):
         source_url = "https://download.libsodium.org/libsodium/releases/libsodium-%s.tar.gz" % self.version
@@ -58,6 +62,8 @@ class LibsodiumConan(ConanFile):
                 args.extend(['--disable-shared', '--enable-static'])
             if self.settings.build_type == 'Debug':
                 args.append('--enable-debug')
+            if self.options.fPIC:
+                args.append('--with-pic')
             env_build = AutoToolsBuildEnvironment(self)
             env_build.configure(args=args)
             env_build.make()
