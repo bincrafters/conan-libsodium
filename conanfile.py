@@ -19,6 +19,7 @@ class LibsodiumConan(ConanFile):
     default_options = "shared=False", "fPIC=True"
 
     def configure(self):
+        del self.settings.compiler.libcxx
         if self.settings.compiler == 'Visual Studio':
             del self.options.fPIC
 
