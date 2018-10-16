@@ -17,6 +17,7 @@ class LibsodiumConan(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
+    short_paths = True
     _source_subfolder = "source_subfolder"
 
     def configure(self):
