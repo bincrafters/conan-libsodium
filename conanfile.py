@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from conans import ConanFile, tools, AutoToolsBuildEnvironment
+from conans import ConanFile, tools, AutoToolsBuildEnvironment, MSBuild
 
 
 class LibsodiumConan(ConanFile):
@@ -32,29 +32,20 @@ class LibsodiumConan(ConanFile):
         os.rename(extracted_dir, self._source_subfolder)
 
     def _build_vs(self):
-        runtime_library = {"MT": "MultiThreaded",
-                           "MTd": "MultiThreadedDebug",
-                           "MD": "MultiThreadedDLL",
-                           "MDd": "MultiThreadedDebugDLL"}.get(str(self.settings.compiler.runtime))
+        msbuild = MSBuild(self)
         if self.options.shared:
             build_type = "DynDebug" if self.settings.build_type == "Debug" else "DynRelease"
         else:
             build_type = "StaticDebug" if self.settings.build_type == "Debug" else "StaticRelease"
-
-        cmd = tools.msvc_build_command(self.settings, "libsodium.sln", upgrade_project=False, build_type=build_type)
         msvc = {"10": "vs2010",
                 "11": "vs2012",
                 "12": "vs2013",
                 "14": "vs2015",
                 "15": "vs2017"}.get(str(self.settings.compiler.version))
         with tools.chdir(os.path.join(self._source_subfolder, "builds", "msvc", msvc)):
-            runtime = "<ClCompile><RuntimeLibrary>%s</RuntimeLibrary>" % runtime_library
-            tools.replace_in_file(os.path.join("libsodium", "libsodium.props"), "<ClCompile>", runtime)
-            if self.settings.arch == "x86":
-                cmd = cmd.replace("x86", "Win32")
-            # skip unit tests
-            cmd += " /p:PostBuildEventUseInBuild=false"
-            self.run(cmd)
+            msbuild.build("libsodium.sln", build_type=build_type,
+                          upgrade_project=False, platforms={"x86": "Win32"},
+                          properties={"PostBuildEventUseInBuild": "false"})
 
     def _build_configure(self):
         with tools.chdir(self._source_subfolder):
