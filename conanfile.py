@@ -44,7 +44,8 @@ class LibsodiumConan(ConanFile):
                 '11': 'vs2012',
                 '12': 'vs2013',
                 '14': 'vs2015',
-                '15': 'vs2017'}.get(str(self.settings.compiler.version))
+                '15': 'vs2017',
+                '16': 'vs2017'}.get(str(self.settings.compiler.version))
         with tools.chdir(os.path.join('sources', 'builds', 'msvc', msvc)):
             runtime = '<ClCompile><RuntimeLibrary>%s</RuntimeLibrary>' % runtime_library
             tools.replace_in_file(os.path.join('libsodium', 'libsodium.props'), '<ClCompile>', runtime)
