@@ -41,7 +41,8 @@ class LibsodiumConan(ConanFile):
                 "11": "vs2012",
                 "12": "vs2013",
                 "14": "vs2015",
-                "15": "vs2017"}.get(str(self.settings.compiler.version))
+                "15": "vs2017",
+                "16": "vs2019"}.get(str(self.settings.compiler.version))
         with tools.chdir(os.path.join(self._source_subfolder, "builds", "msvc", msvc)):
             msbuild.build("libsodium.sln", build_type=build_type,
                           upgrade_project=False, platforms={"x86": "Win32"},
