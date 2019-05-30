@@ -81,11 +81,7 @@ class LibsodiumConan(ConanFile):
             self.build_configure()
 
     def package(self):
-<<<<<<< HEAD
-        self.copy(pattern="LICENSE", src='sources')
-=======
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
->>>>>>> Add MSVC 16 and Clang 8
         self.copy(pattern="FindSodium.cmake")
         if self.settings.compiler == 'Visual Studio':
             self.copy("*.h", dst="include", src=os.path.join("sources", "src", "libsodium", "include"))
