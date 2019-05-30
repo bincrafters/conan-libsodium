@@ -12,7 +12,9 @@ class LibsodiumConan(ConanFile):
     homepage = "https://github.com/jedisct1/libsodium"
     description = "Sodium is a modern, easy-to-use software library for encryption, decryption, signatures, " \
                   "password hashing and more."
-    license = "https://github.com/jedisct1/libsodium/blob/master/LICENSE"
+    license = "ISC"
+    author = "Bincrafters <bincrafters@gmail.com>"
+    topics = ("conan", "sodium", "libsodium", "encryption", "signature", "hashing")
     exports_sources = ["LICENSE.md", "FindSodium.cmake"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
@@ -24,8 +26,9 @@ class LibsodiumConan(ConanFile):
             del self.options.fPIC
 
     def source(self):
+        sha256 = "eeadc7e1e1bcef09680fb4837d448fbdf57224978f865ac1c16745868fbd0533"
         source_url = "https://download.libsodium.org/libsodium/releases/libsodium-%s.tar.gz" % self.version
-        tools.get(source_url)
+        tools.get(source_url, sha256=sha256)
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, "sources")
 
@@ -78,7 +81,11 @@ class LibsodiumConan(ConanFile):
             self.build_configure()
 
     def package(self):
+<<<<<<< HEAD
         self.copy(pattern="LICENSE", src='sources')
+=======
+        self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
+>>>>>>> Add MSVC 16 and Clang 8
         self.copy(pattern="FindSodium.cmake")
         if self.settings.compiler == 'Visual Studio':
             self.copy("*.h", dst="include", src=os.path.join("sources", "src", "libsodium", "include"))
