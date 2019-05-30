@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conans import ConanFile, tools, AutoToolsBuildEnvironment
+from conans import ConanFile, tools, AutoToolsBuildEnvironment, MSBuild
 import os
 
 
@@ -18,7 +18,12 @@ class LibsodiumConan(ConanFile):
     exports_sources = ["LICENSE.md", "FindSodium.cmake"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = "shared=False", "fPIC=True"
+    default_options = {'shared': False, 'fPIC': True}
+    _autotools = None
+
+    @property
+    def _source_subfolder(self):
+        return "source_subfolder"
 
     def configure(self):
         del self.settings.compiler.libcxx
@@ -30,9 +35,9 @@ class LibsodiumConan(ConanFile):
         source_url = "https://download.libsodium.org/libsodium/releases/libsodium-%s.tar.gz" % self.version
         tools.get(source_url, sha256=sha256)
         extracted_dir = self.name + "-" + self.version
-        os.rename(extracted_dir, "sources")
+        os.rename(extracted_dir, self._source_subfolder)
 
-    def build_vs(self):
+    def _build_vs(self):
         runtime_library = {'MT': 'MultiThreaded',
                            'MTd': 'MultiThreadedDebug',
                            'MD': 'MultiThreadedDLL',
@@ -41,25 +46,23 @@ class LibsodiumConan(ConanFile):
             build_type = 'DynDebug' if self.settings.build_type == 'Debug' else 'DynRelease'
         else:
             build_type = 'StaticDebug' if self.settings.build_type == 'Debug' else 'StaticRelease'
-
-        cmd = tools.msvc_build_command(self.settings, "libsodium.sln", upgrade_project=False, build_type=build_type)
+        msbuild = MSBuild(self)
         msvc = {'10': 'vs2010',
                 '11': 'vs2012',
                 '12': 'vs2013',
                 '14': 'vs2015',
                 '15': 'vs2017',
                 '16': 'vs2017'}.get(str(self.settings.compiler.version))
-        with tools.chdir(os.path.join('sources', 'builds', 'msvc', msvc)):
+        with tools.chdir(os.path.join(self._source_subfolder, 'builds', 'msvc', msvc)):
             runtime = '<ClCompile><RuntimeLibrary>%s</RuntimeLibrary>' % runtime_library
             tools.replace_in_file(os.path.join('libsodium', 'libsodium.props'), '<ClCompile>', runtime)
-            if self.settings.arch == "x86":
-                cmd = cmd.replace("x86", "Win32")
-            # skip unit tests
-            cmd += " /p:PostBuildEventUseInBuild=false"
-            self.run(cmd)
 
-    def build_configure(self):
-        with tools.chdir('sources'):
+            msbuild.build("libsodium.sln", build_type=build_type,
+                          upgrade_project=False, platforms={"x86": "Win32"},
+                          properties={"PostBuildEventUseInBuild": "false"})
+
+    def _configure_autotools(self):
+        if not self._autotools:
             args = ['--prefix=%s' % self.package_folder]
             if self.options.shared:
                 args.extend(['--disable-static', '--enable-shared'])
@@ -69,24 +72,27 @@ class LibsodiumConan(ConanFile):
                 args.append('--enable-debug')
             if self.options.fPIC:
                 args.append('--with-pic')
-            env_build = AutoToolsBuildEnvironment(self)
-            env_build.configure(args=args)
-            env_build.make()
-            env_build.make(args=['install'])
+            self._autotools = AutoToolsBuildEnvironment(self)
+            self._autotools.configure(args=args, configure_dir=self._source_subfolder)
+        return self._autotools
 
     def build(self):
         if self.settings.compiler == 'Visual Studio':
-            self.build_vs()
+            self._build_vs()
         else:
-            self.build_configure()
+            autotools = self._configure_autotools()
+            autotools.make()
 
     def package(self):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
         self.copy(pattern="FindSodium.cmake")
         if self.settings.compiler == 'Visual Studio':
-            self.copy("*.h", dst="include", src=os.path.join("sources", "src", "libsodium", "include"))
-            self.copy("*.lib", dst="lib", src="sources", keep_path=False)
-            self.copy("*.dll", dst="bin", src="sources", keep_path=False)
+            self.copy("*.h", dst="include", src=os.path.join(self._source_subfolder, "src", "libsodium", "include"))
+            self.copy("*.lib", dst="lib", src=self._source_subfolder, keep_path=False)
+            self.copy("*.dll", dst="bin", src=self._source_subfolder, keep_path=False)
+        else:
+            autotools = self._configure_autotools()
+            autotools.install()
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
