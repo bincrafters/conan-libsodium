@@ -2,7 +2,7 @@
 
 | Bintray | Windows | Linux & macOS |
 |:--------:|:---------:|:-----------------:|
-|[![Download](https://api.bintray.com/packages/bincrafters/public-conan/libsodium%3Abincrafters/images/download.svg) ](https://bintray.com/bincrafters/public-conan/libsodium%3Abincrafters/_latestVersion)|[![Build status](https://ci.appveyor.com/api/projects/status/github/bincrafters/conan-libsodium?svg=true)](https://ci.appveyor.com/project/bincrafters/conan-libsodium)|[![Build Status](https://travis-ci.org/bincrafters/conan-libsodium.svg)](https://travis-ci.org/bincrafters/conan-libsodium)|
+|[![Download](https://api.bintray.com/packages/bincrafters/public-conan/libsodium%3Abincrafters/images/download.svg) ](https://bintray.com/bincrafters/public-conan/libsodium%3Abincrafters/_latestVersion)|[![Build status](https://ci.appveyor.com/api/projects/status/github/bincrafters/conan-libsodium?svg=true)](https://ci.appveyor.com/project/bincrafters/conan-libsodium)|[![Build Status](https://travis-ci.com/bincrafters/conan-libsodium.svg)](https://travis-ci.com/bincrafters/conan-libsodium)|
 
 ## Conan.io Information
 

@@ -12,7 +12,9 @@ class LibsodiumConan(ConanFile):
     homepage = "https://github.com/jedisct1/libsodium"
     description = "Sodium is a modern, easy-to-use software library for encryption, decryption, signatures, " \
                   "password hashing and more."
-    license = "https://github.com/jedisct1/libsodium/blob/master/LICENSE"
+    license = "ISC"
+    author = "Bincrafters <bincrafters@gmail.com>"
+    topics = ("conan", "sodium", "libsodium", "encryption", "signature", "hashing")
     exports_sources = ["LICENSE.md", "FindSodium.cmake"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
@@ -26,8 +28,9 @@ class LibsodiumConan(ConanFile):
             del self.options.fPIC
 
     def source(self):
+        sha256 = "eeadc7e1e1bcef09680fb4837d448fbdf57224978f865ac1c16745868fbd0533"
         source_url = "https://download.libsodium.org/libsodium/releases/libsodium-%s.tar.gz" % self.version
-        tools.get(source_url)
+        tools.get(source_url, sha256=sha256)
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, self._source_subfolder)
 
@@ -42,7 +45,7 @@ class LibsodiumConan(ConanFile):
                 "12": "vs2013",
                 "14": "vs2015",
                 "15": "vs2017",
-                "16": "vs2019"}.get(str(self.settings.compiler.version))
+                "16": "vs2017"}.get(str(self.settings.compiler.version))
         with tools.chdir(os.path.join(self._source_subfolder, "builds", "msvc", msvc)):
             msbuild.build("libsodium.sln", build_type=build_type,
                           upgrade_project=False, platforms={"x86": "Win32"},
@@ -71,7 +74,7 @@ class LibsodiumConan(ConanFile):
             self._build_configure()
 
     def package(self):
-        self.copy(pattern="LICENSE", src=self._source_subfolder)
+        self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
         self.copy(pattern="FindSodium.cmake")
         if self.settings.compiler == "Visual Studio":
             self.copy("*.h", dst="include", src=os.path.join(self._source_subfolder, "src", "libsodium", "include"))
