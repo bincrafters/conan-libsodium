@@ -7,7 +7,7 @@ import os
 
 class LibsodiumConan(ConanFile):
     name = "libsodium"
-    version = "1.0.17"
+    version = "1.0.18"
     url = "https://github.com/bincrafters/conan-libsodium"
     homepage = "https://github.com/jedisct1/libsodium"
     description = "Sodium is a modern, easy-to-use software library for encryption, decryption, signatures, " \
@@ -27,11 +27,12 @@ class LibsodiumConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
-        if self.settings.compiler == 'Visual Studio':
+        del self.settings.compiler.stdcpp
+        if self.settings.os == 'Windows':
             del self.options.fPIC
 
     def source(self):
-        sha256 = "0cc3dae33e642cc187b5ceb467e0ad0e1b51dcba577de1190e9ffa17766ac2b1"
+        sha256 = "6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1"
         source_url = "https://download.libsodium.org/libsodium/releases/libsodium-%s.tar.gz" % self.version
         tools.get(source_url, sha256=sha256)
         extracted_dir = self.name + "-" + self.version
@@ -52,7 +53,8 @@ class LibsodiumConan(ConanFile):
                 '12': 'vs2013',
                 '14': 'vs2015',
                 '15': 'vs2017',
-                '16': 'vs2017'}.get(str(self.settings.compiler.version))
+                '16': 'vs2017',
+                '16': 'vs2019',}.get(str(self.settings.compiler.version))
         with tools.chdir(os.path.join(self._source_subfolder, 'builds', 'msvc', msvc)):
             runtime = '<ClCompile><RuntimeLibrary>%s</RuntimeLibrary>' % runtime_library
             tools.replace_in_file(os.path.join('libsodium', 'libsodium.props'), '<ClCompile>', runtime)

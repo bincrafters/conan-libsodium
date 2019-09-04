@@ -5,7 +5,7 @@ find_library(sodium_LIBRARY NAMES ${CONAN_LIBS_LIBSODIUM} PATHS ${CONAN_LIB_DIRS
 
 set(sodium_LIBRARY_DEBUG sodium_LIBRARY)
 set(sodium_LIBRARY_RELEASE sodium_LIBRARY)
-set(sodium_VERSION "1.0.16")
+set(sodium_VERSION "1.0.18")
 set(sodium_FOUND ON)
 
 set(sodium_INCLUDE_DIRS ${sodium_INCLUDE_DIR})
