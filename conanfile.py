@@ -75,7 +75,7 @@ class LibsodiumConan(ConanFile):
                 args.append('--enable-debug')
             if self.options.fPIC:
                 args.append('--with-pic')
-            self._autotools = AutoToolsBuildEnvironment(self)
+            self._autotools = AutoToolsBuildEnvironment(self, win_bash=tools.os_info.is_windows)
             self._autotools.configure(args=args, configure_dir=self._source_subfolder)
         return self._autotools
 
