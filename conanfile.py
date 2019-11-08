@@ -25,7 +25,6 @@ class LibsodiumConan(ConanFile):
     def configure(self):
         del self.settings.compiler.libcxx
         del self.settings.compiler.cppstd
-        del self.settings.compiler.stdcpp
         if self.settings.os == 'Windows':
             del self.options.fPIC
 
