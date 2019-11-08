@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from conans import ConanFile, tools, AutoToolsBuildEnvironment, MSBuild
 import os
 
@@ -13,7 +10,6 @@ class LibsodiumConan(ConanFile):
     description = "Sodium is a modern, easy-to-use software library for encryption, decryption, signatures, " \
                   "password hashing and more."
     license = "ISC"
-    author = "Bincrafters <bincrafters@gmail.com>"
     topics = ("conan", "sodium", "libsodium", "encryption", "signature", "hashing")
     exports_sources = ["LICENSE.md", "FindSodium.cmake"]
     settings = "os", "arch", "compiler", "build_type"
@@ -28,6 +24,7 @@ class LibsodiumConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
+        del self.settings.compiler.cppstd
         del self.settings.compiler.stdcpp
         if self.settings.os == 'Windows':
             del self.options.fPIC
